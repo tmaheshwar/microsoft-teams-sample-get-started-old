@@ -8,33 +8,53 @@
       <input type="radio" name="maptype" value="bing" onclick="onClick()"> Bing Maps
       <br>
       <input type="radio" name="maptype" value="google" onclick="onClick()"> Google Maps
+      <br>
+      <br>
+      <label id="creationtime" />
     </form>
 
     <script src="https://statics.teams.microsoft.com/sdk/v0.2/js/MicrosoftTeams.js"></script>
 
     <script type="text/javascript">
       microsoftTeams.initialize();
+
+      // Retrieve the settings associated with this tab instance; if this page is being shown for an existing tab
+      // instance then the settings will already be populated
+      microsoftTeams.settings.getSettings(function(settings) {
+        if (settings.customSettings) {
+          document.getElementById("creationtime").textContent = settings.customSettings;
+        }
+      });
+
+      // Register a handler to be invoked when the user selects the Save button
       microsoftTeams.settings.registerOnSaveHandler(function(saveEvent) {
+        var creationTime =  document.getElementById("creationtime").textContent || ("Creation Time: " + new Date().toLocaleString());
+
+        // Initialize the settings that will define this tab instance
+        var settings = {
+          removeUrl: window.location.origin + "/tabremove.html",  // [Optional] URL of the remove page to be shown when the user tries to delete this tab instance
+          customSettings: creationTime,                           // [Optional] Blob of data to be store for this tab instance
+        };
+
         var radios = document.getElementsByName('maptype');
         if (radios[0].checked) {
-          microsoftTeams.settings.setSettings({
-            contentUrl: "https://www.bing.com/maps/embed",
-            suggestedTabName: "Bing Map",
-            websiteUrl: "https://www.bing.com/maps",
-            removeUrl: window.location.origin + "/tabremove.html"
-          });
+          settings.contentUrl = "https://www.bing.com/maps/embed";  // [Required] URL of the content page for this tab instance
+          settings.suggestedTabName = "Bing Map";                   // [Optional] Suggested display name for this tab instance
+          settings.websiteUrl = "https://www.bing.com/maps";        // [Optional] URL of the full site version of this tab instance
         } else {
-          microsoftTeams.settings.setSettings({
-            contentUrl: "https://www.google.com/maps/embed",
-            suggestedTabName: "Google Map",
-            websiteUrl: "https://www.google.com/maps",
-            removeUrl: window.location.origin + "/tabremove.html"
-          });
+          settings.contentUrl = "https://www.google.com/maps/embed";  // [Required] URL of the content page for this tab instance
+          settings.suggestedTabName = "Google Map";                   // [Optional] Suggested display name for this tab instance
+          settings.websiteUrl = "https://www.google.com/maps";        // [Optional] URL of the full site version of this tab instance
         }
+
+        // Save the settings and notify Microsoft Teams that we have successfully configured the tab instance; if necessary
+        // perform any long-running operations before calling notifySuccess()
+        microsoftTeams.settings.setSettings(settings);
         saveEvent.notifySuccess();
       });
 
       function onClick() {
+        // Notify Microsoft Teams that we are ready to save the tab instance
         microsoftTeams.settings.setValidityState(true);
       }
     </script>
