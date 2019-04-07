@@ -1,6 +1,6 @@
 {
   "$schema": "https://statics.teams.microsoft.com/sdk/v0.4/manifest/MicrosoftTeams.schema.json",
-  "manifestVersion": "0.4",
+  "manifestVersion": "1.3",
   "id": "5bebb729-cf47-4937-b4b2-8f9b818d9655",
   "version": "1.0",
   "name": "Maps",
